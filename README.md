@@ -43,3 +43,21 @@
 #### 원기둥에 specular 적용이 안된다.
 - 원인
 	- specular에서 rec->normal을 구해줄 때에 단위벡터로 만들어준다고 radius를 나눠준다는걸 root를 나눠줬음...
+### 2020/12/21 (월)
+#### dtoa가 완벽하게 되어있지 않음. 그걸 항상 고려하기.
+
+### 2020/12/22
+#### 변환
+
+행렬 곱에서 교환법칙은 안되지만! 결합, 분배법칙은 가능.
+
+[mit.edu>ppt](http://groups.csail.mit.edu/graphics/classes/6.837/F03/lectures/05_transformation_hierarchy.ppt
+
+
+[4*4 역행렬 구하기 공식](https://semath.info/src/inverse-cofactor-ex4.html)
+[4*4 가우스 소거법으로 역행렬 구하기](https://www.intmath.com/matrices-determinants/inverse-matrix-gauss-jordan-elimination.php)
+
+
+[법선 벡터 변환 행렬](https://tails.tistory.com/entry/%EC%A3%BC%EC%96%B4%EC%A7%84-%EB%85%B8%EB%A9%80%EB%B2%A1%ED%84%B0%EC%97%90-Model%ED%96%89%EB%A0%AC%EC%9D%98-%EC%A0%84%EC%B9%98%EC%97%AD%ED%96%89%EB%A0%AC%EC%9D%84-%EA%B3%B1%ED%95%98%EB%8A%94-%EC%9D%B4%EC%9C%A0)
+
+[법선 벡터의 변환을 위한 법선 행렬](http://www.gisdeveloper.co.kr/?p=2224)

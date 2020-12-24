@@ -1,13 +1,14 @@
 #include "lighting.h"
 
-t_light *set_light(t_color color, t_point3 point)
+t_light *set_light(t_point3 point, double brightness, t_color color)
 {
 	t_light *light;
 
+	dprintf(2, "%f, %f, %f\n", point.x,point.y,point.z);
 	light = (t_light *)malloc(sizeof(t_light));
 	if (!light)
 		return (0);
-	light->color = color;
+	light->color = vmult(color, brightness);
 	light->point = point;
 	return (light);
 }

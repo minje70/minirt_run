@@ -12,7 +12,7 @@ typedef int t_bool;
 // 삼각형
 # define TR 3
 // 원기둥 (무한)
-# define CYI 4
+# define CY 4
 // 정사각형
 # define SQ 5
 
@@ -23,6 +23,7 @@ typedef struct s_vec
 	double z;
 } t_vec;
 
+typedef t_vec t_rotate;
 typedef t_vec t_point3;
 typedef t_vec t_color;
 
@@ -32,15 +33,24 @@ typedef struct s_ray
 	t_vec dir;
 } t_ray;
 
+typedef struct	s_std_set
+{
+	int		height;
+	int		width;
+	t_color	color;
+	double	amb_light;
+}				t_std_set;
+
 typedef struct s_camera
 {
-	double viewport_h;
-	double viewport_w;
-	double focal_len;
-	t_point3 origin;
-	t_vec horizontal;
-	t_vec vertical;
-	t_point3 lower_left_corner;
+	double		ratio;
+	double		viewport_h;
+	double		viewport_w;
+	double		focal_len;
+	t_point3	origin;
+	t_vec		horizontal;
+	t_vec		vertical;
+	t_point3	higher_left_corner;
 
 } t_camera;
 
@@ -59,6 +69,7 @@ typedef struct s_objects
 {
 	int type;
 	void *data;
+	t_rotate	rotate;
 	struct s_objects *next;
 } t_objects;
 
@@ -108,5 +119,13 @@ typedef struct	s_square
 	double		len;
 }	t_square;
 
+typedef struct s_data
+{
+	void *img;
+	char *addr;
+	int bits_per_pixel;
+	int line_length;
+	int endian;
+}	t_data;
 
 #endif

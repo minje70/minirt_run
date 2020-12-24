@@ -57,19 +57,27 @@ t_bool hit(t_ray *r, t_hitrec *rec, t_objects *object)
 	return (hit_anything);
 }
 
-t_bool object_hit(t_ray *r, t_hitrec *rec, t_objects *object)
+t_bool object_hit(t_ray *r, t_hitrec *rec, t_objects *object)// 실린더 돌려보자!!!!!!!!!!!!!
 {
+	t_point3	offset;
+	t_bool		result;
+
+	offset = point3(0, 0, 0);
 	if (object->type == SP)
-		return (hit_sphere(object->data, r, rec));
+		result = hit_sphere(object->data, r, rec);
 	else if (object->type == PL)
-		return (hit_plane(object->data, r, rec));
+		result = hit_plane(object->data, r, rec);
 	else if (object->type == TR)
-		return (hit_triangle(object->data, r, rec));
-	else if (object->type == CYI)
-		return (hit_cylinder(object->data, r, rec));
+		result = hit_triangle(object->data, r, rec);
+	else if (object->type == CY)
+		result = check_cy_rotate(object, rec, r, &offset);
 	else if (object->type == SQ)
-		return (hit_square(object->data, r, rec));
-	return (0);
+		result = hit_square(object->data, r, rec);
+	else
+		result = 0;
+	
+	ray_normal_back(rec, &object->rotate, &offset);
+	return (result);
 }
 
 t_objects *set_object(int type, void *data)
@@ -80,5 +88,6 @@ t_objects *set_object(int type, void *data)
 	result->data = data;
 	result->type = type;
 	result->next = 0;
+	result->rotate = point3(0, 0, 30);
 	return (result);
 }

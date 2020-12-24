@@ -93,7 +93,6 @@ t_color hit_light(t_hitrec *rec, t_objects *obj, t_camera *camera)
 	t_objects *temp_obj;
 	double distance_attenuation;
 
-
 	temp_obj = obj;
 	result = color(0, 0, 0);
 	while (obj)

@@ -5,6 +5,7 @@
 # include "ray.h"
 # include "lighting.h"
 # include "uutil.h"
+# include "move.h"
 
 void set_face_normal(t_ray *r, t_hitrec *rec);
 t_objects *set_object(int type, void *data);

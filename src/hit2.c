@@ -1,7 +1,8 @@
 #include "hit.h"
 
-t_bool hit_cylinder(t_cylinder *cy, t_ray *r, t_hitrec *rec)
+t_bool	hit_cylinder(t_cylinder *cy, t_ray *r, t_hitrec *rec)
 {
+	// obj->rotate 가지고 회전시키기.
 	double a = vlength2(vminus(r->dir, vmult(cy->v, vdot(cy->v, r->dir))));
 	double half_b = vdot(vminus(r->dir, vmult(cy->v, vdot(cy->v, r->dir))), vminus(vminus(r->orig, cy->p), vmult(cy->v ,vdot(cy->v, vminus(r->orig, cy->p)))));
 	double c = vlength2(vminus(vminus(r->orig, cy->p), vmult(cy->v ,vdot(cy->v, vminus(r->orig, cy->p))))) - cy->r * cy->r;
@@ -29,11 +30,8 @@ t_bool hit_cylinder(t_cylinder *cy, t_ray *r, t_hitrec *rec)
 	rec->t = root;
 	rec->p = ray_at(*r, rec->t);
 	rec->normal = vdivide(vminus(vminus(rec->p, cy->p), vmult(cy->v, vdot(cy->v, vminus(rec->p, cy->p)))), cy->r);
-	// dprintf(2, "test normal m: %f\n", vdot(cy->v, vminus(rec->p, cy->p)));
 	rec->obj_color = cy->color;
-	// dprintf(2, "r->normal:%f, %f, %f\n", rec->normal.x, rec->normal.y, rec->normal.z);
 	set_face_normal(r, rec);
-	// dprintf(2, "rec_normal: %f, %f, %f\n",rec->normal.x,rec->normal.y,rec->normal.z);
 	return (1);
 }
 
