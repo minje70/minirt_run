@@ -73,6 +73,7 @@ t_bool hit_triangle(t_triangle *tri, t_ray *r, t_hitrec *rec)
 	rec->normal = tri->normal;
 	rec->obj_color = tri->color;
 	set_face_normal(r, rec);
+	// rec->p = vplus(rec->p, vmult(rec->normal, 0.0001));
 	return (1);
 }
 
@@ -95,6 +96,8 @@ t_color hit_light(t_hitrec *rec, t_objects *obj, t_camera *camera)
 
 	temp_obj = obj;
 	result = color(0, 0, 0);
+	rec->tmax = infinity;
+	rec->tmin = 0.001;
 	while (obj)
 	{
 		if (obj->type == LI)

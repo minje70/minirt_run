@@ -58,23 +58,33 @@ double	check_dtoa(char **line)
 	return (result);
 }
 
-int	parsing_check(t_camera *camera, t_objects *obj, t_std_set *s_set, char **line)
+int	parsing_check(t_camera *camera, t_objects **obj, t_std_set *s_set, char **line)
 {
-	if (**line == 'R')
+	if (**line == 's' && *(*line + 1) == 'p')
+		obj_add_back(obj, set_object(SP, set_sphere(point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), check_dtoa(line), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0))));
+	else if (**line == 'p' && *(*line + 1) == 'l')
+		obj_add_back(obj, set_object(PL, set_plane(point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), vec3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0))));
+	else if (**line == 's' && *(*line + 1) == 'q')
+		obj_add_back(obj, set_object(SQ, set_square(point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), vec3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), check_dtoa(line), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0))));
+	else if (**line == 'c' && *(*line + 1) == 'y')
+		obj_add_back(obj, set_object(CY, set_cylinder(point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), vec3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), check_dtoa(line), check_dtoa(line), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0))));
+	else if (**line == 't' && *(*line + 1) == 'r')
+		obj_add_back(obj, set_object(TR, set_triangle(point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0))));
+	else if (**line == 'R')
 		set_viewport(s_set, check_itoa(line), check_itoa(line));
 	else if (**line == 'A')
 		set_amblight(s_set, check_dtoa(line), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0));
 	else if (**line == 'c')
 		set_camera(camera, s_set, point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), vec3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), check_itoa(line));
 	else if (**line == 'l')
-		obj_add_back(&obj, set_object(LI, set_light(point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), check_dtoa(line), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0))));
+		obj_add_back(obj, set_object(LI, set_light(point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), check_dtoa(line), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0))));
 	else
 		return (0);
 	return (1);
 }
 
 // 파싱에 성공하면 1, 아니면 0
-int	parsing(t_camera *camera, t_objects *obj, t_std_set *s_set, char *rtname)
+int	parsing(t_camera *camera, t_objects **obj, t_std_set *s_set, char *rtname)
 {
 	int		fd;
 	char	*line;
@@ -90,10 +100,12 @@ int	parsing(t_camera *camera, t_objects *obj, t_std_set *s_set, char *rtname)
 	{
 		temp = line;
 		parsing_check(camera, obj, s_set, &line);
+		dprintf(2, "%s\n", temp);
 		free(temp);
 	}
 	temp = line;
 	parsing_check(camera, obj, s_set, &line);
+	dprintf(2, "%s\n", temp);
 	free(temp);
 	return (1);
 }

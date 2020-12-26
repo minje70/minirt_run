@@ -9,7 +9,7 @@
 
 int	check_itoa(char **line);
 double	check_dtoa(char **line);
-int	parsing_check(t_camera *camera, t_objects *obj, t_std_set *s_set, char **line);
-int	parsing(t_camera *camera, t_objects *obj, t_std_set *s_set, char *rtname);
+int	parsing_check(t_camera *camera, t_objects **obj, t_std_set *s_set, char **line);
+int	parsing(t_camera *camera, t_objects **obj, t_std_set *s_set, char *rtname);
 
 #endif

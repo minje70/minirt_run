@@ -35,14 +35,10 @@ t_color specular_color(t_light *light, t_hitrec *rec, t_camera *camera)
 	t_vec temp;
 
 	specular_strength = 0.5;
-	// dprintf(2, "camera->origin:%f, %f, %f\nrec->p:%f, %f, %f\n", camera->origin.x, camera->origin.y, camera->origin.z, rec->p.x, rec->p.y, rec->p.z);
-
 	view_dir = vunit(vminus(camera->origin, rec->p));
 	temp = vminus(rec->p, light->point);
 	reflect_dir = vunit(vplus(temp, vmult(rec->normal, -2 * vdot(temp, rec->normal))));
 	spec = pow(max_d(vdot(view_dir, reflect_dir), 0.0), 256);
-	// dprintf(2, "view: %f, %f, %f\nreflect: %f, %f, %f\n", view_dir.x, view_dir.y, view_dir.z, reflect_dir.x, reflect_dir.y, reflect_dir.z);
-	// dprintf(2, "vdot(view_dir, reflect_dir)%f\n", vdot(view_dir, reflect_dir));
 	return (vmult(light->color, specular_strength * spec));
 }
 
@@ -53,9 +49,10 @@ t_bool shadow_color(t_light *light, t_objects *obj, t_hitrec *rec, t_camera *cam
 
 	r.orig = rec->p;
 	r.dir = vminus(light->point, rec->p);
-	temp_rec.tmin = 0.001;
-	temp_rec.tmax = r.dir.x / r.dir.x;
-	// temp_rec.tmax = vlength(r.dir); // 광원에서 표면까지의 거리를 넣어주기.
+	temp_rec.tmax = r.dir.x;
+	r.dir = vunit(r.dir);
+	temp_rec.tmax /= r.dir.x;
+	temp_rec.tmin = 0.0001;
 	if (hit(&r, &temp_rec, obj))
 		return (1);
 	return (0);

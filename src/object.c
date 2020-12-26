@@ -68,15 +68,15 @@ t_bool object_hit(t_ray *r, t_hitrec *rec, t_objects *object)// 실린더 돌려
 	else if (object->type == PL)
 		result = hit_plane(object->data, r, rec);
 	else if (object->type == TR)
-		result = hit_triangle(object->data, r, rec);
+		result = check_tr_rotate(object, rec, r, &offset);
 	else if (object->type == CY)
 		result = check_cy_rotate(object, rec, r, &offset);
 	else if (object->type == SQ)
-		result = hit_square(object->data, r, rec);
+		result = check_sq_rotate(object, rec, r, &offset);
 	else
 		result = 0;
-	
-	ray_normal_back(rec, &object->rotate, &offset);
+	if (object->type == CY || object->type == TR || object->type == SQ)
+		ray_normal_back(rec, &object->rotate, &offset);
 	return (result);
 }
 
@@ -88,6 +88,6 @@ t_objects *set_object(int type, void *data)
 	result->data = data;
 	result->type = type;
 	result->next = 0;
-	result->rotate = point3(0, 0, 30);
+	result->rotate = point3(-20, 45, 0);
 	return (result);
 }
