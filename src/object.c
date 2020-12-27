@@ -88,6 +88,6 @@ t_objects *set_object(int type, void *data)
 	result->data = data;
 	result->type = type;
 	result->next = 0;
-	result->rotate = point3(-20, 45, 0);
+	result->rotate = point3(0, 0, 0);
 	return (result);
 }
