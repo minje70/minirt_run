@@ -66,3 +66,51 @@ t_bool	hit_square(t_square *sq, t_ray *r, t_hitrec *rec)
 	// rec->p = vplus(rec->p, vmult(rec->normal, 0.001));
 	return (1);
 }
+
+t_bool	hit_cube(t_cube *cu, t_ray *r, t_hitrec *rec)
+{
+	int			i;
+	int			hit_anything;
+	t_hitrec	*temp_rec;
+
+	temp_rec = rec;
+	hit_anything = 0;
+	i = -1;
+	while (++i < 6)
+	{
+		if (hit_square(cu->sq[i], r, temp_rec))
+		{
+			hit_anything = 1;
+			temp_rec->tmax = temp_rec->t;
+			*rec = *temp_rec;
+		}
+	}
+	return (hit_anything);
+}
+
+t_bool	hit_pyramid(t_pyramid *py, t_ray *r, t_hitrec *rec)
+{
+	int			i;
+	int			hit_anything;
+	t_hitrec	*temp_rec;
+
+	temp_rec = rec;
+	hit_anything = 0;
+	i = -1;
+	while (++i < 4)
+	{
+		if (hit_triangle(py->tr[i], r, temp_rec))
+		{
+			hit_anything = 1;
+			temp_rec->tmax = temp_rec->t;
+			*rec = *temp_rec;
+		}
+	}
+	if (hit_square(py->sq, r, temp_rec))
+	{
+		hit_anything = 1;
+		temp_rec->tmax = temp_rec->t;
+		*rec = *temp_rec;
+	}
+	return (hit_anything);
+}

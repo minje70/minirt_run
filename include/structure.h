@@ -15,6 +15,12 @@ typedef int t_bool;
 # define CY 4
 // 정사각형
 # define SQ 5
+// 카메라
+# define CAM 6
+// 보너스 큐브
+# define CU 7
+// 보너스 피라미드
+# define PY 8
 
 typedef struct s_vec
 {
@@ -43,27 +49,19 @@ typedef struct	s_std_set
 
 typedef struct s_camera
 {
-	double		ratio;
-	double		viewport_h;
-	double		viewport_w;
-	double		focal_len;
 	t_point3	origin;
+	t_vec		w;
+	double		fov;
+	// double		ratio;
+	// double		viewport_h;
+	// double		viewport_w;
+	// double		focal_len;
 	t_vec		horizontal;
 	t_vec		vertical;
-	t_point3	higher_left_corner;
+	t_point3	left_top_corner;
 
 } t_camera;
 
-typedef struct s_hitrec
-{
-	t_point3 p;
-	t_vec normal;
-	double t;
-	double tmin;
-	double tmax;
-	t_color obj_color;
-	t_bool front_face;
-} t_hitrec;
 
 typedef struct s_objects
 {
@@ -72,6 +70,18 @@ typedef struct s_objects
 	t_rotate	rotate;
 	struct s_objects *next;
 } t_objects;
+
+typedef struct s_hitrec
+{
+	t_point3	p;
+	t_vec		normal;
+	double		t;
+	double		tmin;
+	double		tmax;
+	t_objects	*obj;
+	t_color		obj_color;
+	t_bool		front_face;
+} t_hitrec;
 
 typedef struct s_sphere
 {
@@ -96,16 +106,20 @@ typedef struct s_triangle
 	t_color		color;
 } t_triangle;
 
+
 typedef struct s_light
 {
-	t_color color;
-	t_point3 point;
+	t_color		color;
+	t_point3	point;
+	double		brightness;
+	t_color		light_color;
 } t_light;
 
 typedef struct	s_cylinder
 {
 	t_point3	p;
 	t_point3	p2;
+	double		h;
 	double		r;
 	t_vec		v;
 	t_color		color;
@@ -119,6 +133,23 @@ typedef struct	s_square
 	double		len;
 }	t_square;
 
+typedef struct	s_pyramid
+{
+	t_point3	p;
+	double		len;
+	t_square	*sq;
+	t_triangle	*tr[4];
+	t_color		color;
+}				t_pyramid;
+
+typedef struct	s_cube
+{
+	t_point3	p;
+	double		len;
+	t_square	*sq[6];
+	t_color		color;
+}				t_cube;
+
 typedef struct s_data
 {
 	void *img;
@@ -127,5 +158,32 @@ typedef struct s_data
 	int line_length;
 	int endian;
 }	t_data;
+
+typedef struct	s_scene
+{
+	t_std_set	canv;
+	t_objects	*cam_list;
+	t_camera	*cam_onair;
+	t_objects	*world;
+	t_data		*img;
+}				t_scene;
+
+typedef struct	s_cntl
+{
+	void		*mlx;
+	void		*win;
+	t_scene		*scene;
+	t_objects	*selected;
+	t_data		*img;
+	int			mode;
+	int			light_on;
+}				t_cntl;
+
+typedef struct	s_basket
+{
+	t_scene		*scene;
+	int			lane;
+	int			light_on;
+}				t_basket;
 
 #endif

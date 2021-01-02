@@ -3,13 +3,16 @@
 t_light *set_light(t_point3 point, double brightness, t_color color)
 {
 	t_light *light;
+	double	lux;
 
+	lux = 50;
 	dprintf(2, "%f, %f, %f\n", point.x,point.y,point.z);
 	light = (t_light *)malloc(sizeof(t_light));
 	if (!light)
 		return (0);
-	light->color = vmult(color, brightness);
+	light->color = vmult(color, brightness * lux);
 	light->point = point;
+	light->brightness = brightness;
 	return (light);
 }
 

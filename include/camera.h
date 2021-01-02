@@ -6,8 +6,9 @@
 # include "vector.h"
 # include "uutil.h"
 
-void	set_amblight(t_std_set *s_set, double lighting_ratio, t_color color);
-void	set_viewport(t_std_set *s_set, int width, int height);
-int		set_camera(t_camera *camera, t_std_set *s_set, t_point3 lookfrom, t_vec w, double fov);
-int		set_camera2(t_camera *camera, t_point3 lookfrom, t_vec w);
+void		set_amblight(t_std_set *s_set, double lighting_ratio, t_color color);
+void		set_viewport(t_std_set *s_set, int width, int height);
+t_camera	*init_camera(t_point3 lookfrom, t_vec w, double fov);
+int			set_camera(t_camera	*cam);
+// int			set_camera2(t_camera *camera, t_point3 lookfrom, t_vec w);
 #endif

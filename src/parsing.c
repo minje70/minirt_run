@@ -1,19 +1,28 @@
 #include "parsing.h"
 
-int	check_itoa(char **line)
+void	eerror(char *msg)
+{
+	perror(msg);
+	exit(0);
+}
+
+int	check_itoa(char **line, int num)
 {
 	int	result;
 	int	key;
 
 	result = 0;
 	key = 0;
-	while (**line == ' ' || **line == '\t' || **line == '\n' || **line == ',' || ft_isalpha(**line))
+	*line = *line + num;
+	while (**line == ' ' || **line == '\t' || **line == '\n' || **line == ',')
 		(*line)++;
 	if (**line == '-')
 	{
 		key = 1;
 		(*line)++;
 	}
+	if (!(**line >= '0' && **line <= '9'))
+		eerror("Error\n파일의 구조가 틀립니다.\n");
 	while (**line >= '0' && **line <= '9')
 	{
 		result = result * 10 + **line - '0';
@@ -24,7 +33,7 @@ int	check_itoa(char **line)
 	return (result);
 }
 
-double	check_dtoa(char **line)
+double	check_dtoa(char **line, int num)
 {
 	double	result;
 	double	dec;
@@ -33,20 +42,29 @@ double	check_dtoa(char **line)
 	key = 0;
 	result = 0;
 	dec = 1;
-	while (**line == ' ' || **line == '\t' || **line == '\n' || **line == ',' || ft_isalpha(**line))
+	*line = *line + num;
+	while (**line == ' ' || **line == '\t' || **line == '\n' || **line == ',')
 		(*line)++;
 	if (**line == '-')
 	{
 		(*line)++;
 		key = 1;
 	}
+	if (!(**line >= '0' && **line <= '9'))
+		eerror("Error\n파일의 구조가 틀립니다.\n");
 	while (**line >= '0' && **line <= '9')
 	{
 		result = result * 10 + **line - '0';
 		(*line)++;
 	}
 	if (**line == '.')
+	{
+		if (!(*(*line - 1) >= '0' && *(*line - 1) <= '9'))
+			eerror("Error\n파일의 구조가 틀립니다.\n");
 		(*line)++;
+		if (!(**line >= '0' && **line <= '9'))
+			eerror("Error\n파일의 구조가 틀립니다.\n");
+	}
 	while (**line >= '0' && **line <= '9')
 	{
 		dec *= 10;
@@ -58,33 +76,37 @@ double	check_dtoa(char **line)
 	return (result);
 }
 
-int	parsing_check(t_camera *camera, t_objects **obj, t_std_set *s_set, char **line)
+int	parsing_check(t_cntl *cntl, char **line)
 {
 	if (**line == 's' && *(*line + 1) == 'p')
-		obj_add_back(obj, set_object(SP, set_sphere(point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), check_dtoa(line), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0))));
+		obj_add_back(&cntl->scene->world, set_object(SP, set_sphere(point3(check_dtoa(line, 2), check_dtoa(line, 0), check_dtoa(line, 0)), check_dtoa(line, 0), vdivide(color(check_itoa(line, 0), check_itoa(line, 0), check_itoa(line, 0)), 255.0))));
 	else if (**line == 'p' && *(*line + 1) == 'l')
-		obj_add_back(obj, set_object(PL, set_plane(point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), vec3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0))));
+		obj_add_back(&cntl->scene->world, set_object(PL, set_plane(point3(check_dtoa(line, 2), check_dtoa(line, 0), check_dtoa(line, 0)), vec3(check_dtoa(line, 0), check_dtoa(line, 0), check_dtoa(line, 0)), vdivide(color(check_itoa(line, 0), check_itoa(line, 0), check_itoa(line, 0)), 255.0))));
 	else if (**line == 's' && *(*line + 1) == 'q')
-		obj_add_back(obj, set_object(SQ, set_square(point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), vec3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), check_dtoa(line), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0))));
+		obj_add_back(&cntl->scene->world, set_object(SQ, set_square(point3(check_dtoa(line, 2), check_dtoa(line, 0), check_dtoa(line, 0)), vec3(check_dtoa(line, 0), check_dtoa(line, 0), check_dtoa(line, 0)), check_dtoa(line, 0), vdivide(color(check_itoa(line, 0), check_itoa(line, 0), check_itoa(line, 0)), 255.0))));
 	else if (**line == 'c' && *(*line + 1) == 'y')
-		obj_add_back(obj, set_object(CY, set_cylinder(point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), vec3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), check_dtoa(line), check_dtoa(line), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0))));
+		obj_add_back(&cntl->scene->world, set_object(CY, set_cylinder(point3(check_dtoa(line, 2), check_dtoa(line, 0), check_dtoa(line, 0)), vec3(check_dtoa(line, 0), check_dtoa(line, 0), check_dtoa(line, 0)), check_dtoa(line, 0), check_dtoa(line, 0), vdivide(color(check_itoa(line, 0), check_itoa(line, 0), check_itoa(line, 0)), 255.0))));
 	else if (**line == 't' && *(*line + 1) == 'r')
-		obj_add_back(obj, set_object(TR, set_triangle(point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0))));
+		obj_add_back(&cntl->scene->world, set_object(TR, set_triangle(point3(check_dtoa(line, 2), check_dtoa(line, 0), check_dtoa(line, 0)), point3(check_dtoa(line, 0), check_dtoa(line, 0), check_dtoa(line, 0)), point3(check_dtoa(line, 0), check_dtoa(line, 0), check_dtoa(line, 0)), vdivide(color(check_itoa(line, 0), check_itoa(line, 0), check_itoa(line, 0)), 255.0))));
+	else if (**line == 'c' && *(*line + 1) == 'u')
+		obj_add_back(&cntl->scene->world, set_object(CU, set_cube(point3(check_dtoa(line, 2), check_dtoa(line, 0), check_dtoa(line, 0)), check_dtoa(line, 0), vdivide(color(check_itoa(line, 0), check_itoa(line, 0), check_itoa(line, 0)), 255.0))));
+	else if (**line == 'p' && *(*line + 1) == 'y')
+		obj_add_back(&cntl->scene->world, set_object(PY, set_pyramid(point3(check_dtoa(line, 2), check_dtoa(line, 0), check_dtoa(line, 0)), check_dtoa(line, 0), check_dtoa(line, 0), vdivide(color(check_itoa(line, 0), check_itoa(line, 0), check_itoa(line, 0)), 255.0))));
 	else if (**line == 'R')
-		set_viewport(s_set, check_itoa(line), check_itoa(line));
+		set_viewport(&cntl->scene->canv, check_itoa(line, 1), check_itoa(line, 0));
 	else if (**line == 'A')
-		set_amblight(s_set, check_dtoa(line), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0));
+		set_amblight(&cntl->scene->canv, check_dtoa(line, 1), vdivide(color(check_itoa(line, 0), check_itoa(line, 0), check_itoa(line, 0)), 255.0));
 	else if (**line == 'c')
-		set_camera(camera, s_set, point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), vec3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), check_itoa(line));
+		obj_add_back(&cntl->scene->cam_list, set_object(CAM, init_camera(point3(check_dtoa(line, 1), check_dtoa(line, 0), check_dtoa(line, 0)), vec3(check_dtoa(line, 0), check_dtoa(line, 0), check_dtoa(line, 0)), check_itoa(line, 0))));
 	else if (**line == 'l')
-		obj_add_back(obj, set_object(LI, set_light(point3(check_dtoa(line), check_dtoa(line), check_dtoa(line)), check_dtoa(line), vdivide(color(check_itoa(line), check_itoa(line), check_itoa(line)), 255.0))));
-	else
-		return (0);
+		obj_add_back(&cntl->scene->world, set_object(LI, set_light(point3(check_dtoa(line, 1), check_dtoa(line, 0), check_dtoa(line, 0)), check_dtoa(line, 0), vdivide(color(check_itoa(line, 0), check_itoa(line, 0), check_itoa(line, 0)), 255.0))));
+	else if (**line != 0)
+		eerror("Error\n잘못된 식별자가 들어왔습니다.");
 	return (1);
 }
 
 // 파싱에 성공하면 1, 아니면 0
-int	parsing(t_camera *camera, t_objects **obj, t_std_set *s_set, char *rtname)
+int	parsing(t_cntl *cntl, char *rtname)
 {
 	int		fd;
 	char	*line;
@@ -93,19 +115,19 @@ int	parsing(t_camera *camera, t_objects **obj, t_std_set *s_set, char *rtname)
 	fd = open(rtname, O_RDONLY);
 	if (fd == -1)
 	{
-		dprintf(2, "parsing fail!!!!!!\n");
-		return (-1);
+		perror("Parsing fail");
+		exit(1);
 	}
 	while (get_next_line(fd, &line))
 	{
 		temp = line;
-		parsing_check(camera, obj, s_set, &line);
-		dprintf(2, "%s\n", temp);
+		while (*line == ' ' || *line == '\t')
+			line++;
+		parsing_check(cntl, &line);
 		free(temp);
 	}
 	temp = line;
-	parsing_check(camera, obj, s_set, &line);
-	dprintf(2, "%s\n", temp);
+	parsing_check(cntl, &line);
 	free(temp);
 	return (1);
 }

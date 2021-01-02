@@ -36,47 +36,45 @@ void object_clear(t_objects **obj)
 t_bool hit(t_ray *r, t_hitrec *rec, t_objects *object)
 {
 	t_hitrec temp_rec;
-	t_bool hit_anything = 0;
+	t_bool hit_anything;
 	double closest_so_far = rec->tmax;
-	temp_rec.tmax = rec->tmax;
-	temp_rec.tmin = rec->tmin;
+
+	hit_anything = 0;
+	temp_rec = *rec;
 	while (object)
 	{
 		if (object_hit(r, &temp_rec, object))
 		{
 			hit_anything = 1;
-			if (closest_so_far > temp_rec.t)
-			{
-				closest_so_far = temp_rec.t;
-				*rec = temp_rec;
-			}
+			temp_rec.tmax = temp_rec.t;
+			*rec = temp_rec;
+			rec->obj = object;
 		}
 		object = object->next;
 	}
-	// dprintf(2, "%d\n", hit_anything);
 	return (hit_anything);
 }
 
 t_bool object_hit(t_ray *r, t_hitrec *rec, t_objects *object)// 실린더 돌려보자!!!!!!!!!!!!!
 {
-	t_point3	offset;
 	t_bool		result;
 
-	offset = point3(0, 0, 0);
 	if (object->type == SP)
 		result = hit_sphere(object->data, r, rec);
 	else if (object->type == PL)
-		result = hit_plane(object->data, r, rec);
+		result = check_pl_rotate(object, rec, r);
 	else if (object->type == TR)
-		result = check_tr_rotate(object, rec, r, &offset);
+		result = check_tr_rotate(object, rec, r);
 	else if (object->type == CY)
-		result = check_cy_rotate(object, rec, r, &offset);
+		result = check_cy_rotate(object, rec, r);
 	else if (object->type == SQ)
-		result = check_sq_rotate(object, rec, r, &offset);
+		result = check_sq_rotate(object, rec, r);
+	else if (object->type == CU)
+		result = check_cu_rotate(object, rec, r);
+	else if (object->type == PY)
+		result = check_py_rotate(object, rec, r);
 	else
 		result = 0;
-	if (object->type == CY || object->type == TR || object->type == SQ)
-		ray_normal_back(rec, &object->rotate, &offset);
 	return (result);
 }
 

@@ -7,9 +7,6 @@ t_bool hit_sphere(t_sphere *sphere, t_ray *r, t_hitrec *rec)
 	double half_b = vdot(oc, r->dir);
 	double c = vdot(oc, oc) - sphere->radius * sphere->radius;
 	double discriminant = half_b * half_b - a * c;
-	// dprintf(2, "center:%f, %f, %f\n", sphere->center.x, sphere->center.y, sphere->center.z);
-	// dprintf(2, "r->dir:%f, %f, %f\n", r->dir.x, r->dir.y, r->dir.z);
-	// dprintf(2, "sphere->radius:%f\n", sphere->radius);
 	if (discriminant < 0)
 		return (0);
 	double sqrtd = sqrt(discriminant);
@@ -34,15 +31,10 @@ t_bool hit_plane(t_plane *plane, t_ray *r, t_hitrec *rec)
 	double	root;
 
 	root = vdot(vminus(plane->p, r->orig), plane->normal) / vdot(plane->normal, r->dir);
-
 	if (root < 0)
-	{
 		return (0);
-	}
 	if (root < rec->tmin || root > rec->tmax)
-	{
 		return (0);
-	}
 	rec->t = root;
 	rec->p = ray_at(*r, rec->t);
 	rec->normal = plane->normal;
