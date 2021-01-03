@@ -45,7 +45,22 @@ t_color specular_color(t_light *light, t_hitrec *rec, t_camera *camera)
 	return (vmult(light->color, specular_strength * spec));
 }
 
-t_bool shadow_color(t_light *light, t_objects *obj, t_hitrec *rec, t_camera *camera)
+t_bool shadow_parallel_color(t_vec *light_dir, t_objects *obj, t_hitrec *rec)
+{
+	t_ray r;
+	t_hitrec temp_rec;
+
+	r.orig = rec->p;
+	r.dir = vmult(*light_dir, -1);
+	r.dir = vunit(r.dir);
+	temp_rec.tmax = INFINITY;
+	temp_rec.tmin = 0.0001;
+	if (hit(&r, &temp_rec, obj))
+		return (1);
+	return (0);
+}
+
+t_bool shadow_color(t_light *light, t_objects *obj, t_hitrec *rec)
 {
 	t_ray r;
 	t_hitrec temp_rec;

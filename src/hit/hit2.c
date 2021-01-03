@@ -1,5 +1,19 @@
 #include "hit.h"
 
+
+t_bool	hit_cy_circle(t_plane *pl, t_ray *r, t_hitrec *rec, double radius)
+{
+    t_vec v;
+
+    if (hit_plane(pl, r, rec))
+	{
+		v = vminus(pl->p, rec->p);
+		if (vlength(v) <= radius)
+			return (1);
+	}
+	return (0);
+}
+
 t_bool	hit_cylinder(t_cylinder *cy, t_ray *r, t_hitrec *rec)
 {
 	// obj->rotate 가지고 회전시키기.
@@ -37,6 +51,39 @@ t_bool	hit_cylinder(t_cylinder *cy, t_ray *r, t_hitrec *rec)
 	return (1);
 }
 
+t_bool	hit_cap_cylinder(t_cylinder *cy, t_ray *r, t_hitrec *rec)
+{
+	int			hit_anything;
+	t_hitrec	temp_rec;
+	t_plane		pl;
+
+	temp_rec = *rec;
+	hit_anything = 0;
+	pl.color = cy->color;
+	pl.normal = cy->v;
+	if (hit_cylinder(cy, r, &temp_rec))
+	{
+		hit_anything = 1;
+		temp_rec.tmax = temp_rec.t;
+		*rec = temp_rec;
+	}
+	pl.p = cy->p;
+	if (hit_cy_circle(&pl, r, &temp_rec, cy->r))
+	{
+		hit_anything = 1;
+		temp_rec.tmax = temp_rec.t;
+		*rec = temp_rec;
+	}
+	pl.p = cy->p2;
+	if (hit_cy_circle(&pl, r, &temp_rec, cy->r))
+	{
+		hit_anything = 1;
+		temp_rec.tmax = temp_rec.t;
+		*rec = temp_rec;
+	}
+	return (hit_anything);
+}
+
 t_bool	hit_square(t_square *sq, t_ray *r, t_hitrec *rec)
 {
 	t_point3	p1;
@@ -46,7 +93,11 @@ t_bool	hit_square(t_square *sq, t_ray *r, t_hitrec *rec)
 	t_vec		temp;
 	double		root;
 
-	root = vdot(vminus(sq->p, r->orig), sq->n) / vdot(sq->n, r->dir);
+	root = vdot(vminus(sq->p, r->orig), sq->n);
+	if (vdot(sq->n, r->dir) == 0)
+		root = root / 0.00001;
+	else
+		root = root / vdot(sq->n, r->dir);
 	if (root < 0 || root < rec->tmin || root > rec->tmax)
 		return (0);
 	p1 = vmult(vunit(vcross(vminus(yzero(sq->p), sq->p), sq->n)), sq->len / 2);
@@ -71,18 +122,18 @@ t_bool	hit_cube(t_cube *cu, t_ray *r, t_hitrec *rec)
 {
 	int			i;
 	int			hit_anything;
-	t_hitrec	*temp_rec;
+	t_hitrec	temp_rec;
 
-	temp_rec = rec;
+	temp_rec = *rec;
 	hit_anything = 0;
 	i = -1;
 	while (++i < 6)
 	{
-		if (hit_square(cu->sq[i], r, temp_rec))
+		if (hit_square(cu->sq[i], r, &temp_rec))
 		{
 			hit_anything = 1;
-			temp_rec->tmax = temp_rec->t;
-			*rec = *temp_rec;
+			temp_rec.tmax = temp_rec.t;
+			*rec = temp_rec;
 		}
 	}
 	return (hit_anything);
@@ -92,25 +143,25 @@ t_bool	hit_pyramid(t_pyramid *py, t_ray *r, t_hitrec *rec)
 {
 	int			i;
 	int			hit_anything;
-	t_hitrec	*temp_rec;
+	t_hitrec	temp_rec;
 
-	temp_rec = rec;
+	temp_rec = *rec;
 	hit_anything = 0;
 	i = -1;
 	while (++i < 4)
 	{
-		if (hit_triangle(py->tr[i], r, temp_rec))
+		if (hit_triangle(py->tr[i], r, &temp_rec))
 		{
 			hit_anything = 1;
-			temp_rec->tmax = temp_rec->t;
-			*rec = *temp_rec;
+			temp_rec.tmax = temp_rec.t;
+			*rec = temp_rec;
 		}
 	}
-	if (hit_square(py->sq, r, temp_rec))
+	if (hit_square(py->sq, r, &temp_rec))
 	{
 		hit_anything = 1;
-		temp_rec->tmax = temp_rec->t;
-		*rec = *temp_rec;
+		temp_rec.tmax = temp_rec.t;
+		*rec = temp_rec;
 	}
 	return (hit_anything);
 }

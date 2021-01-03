@@ -30,5 +30,7 @@ t_bool	hit_cylinder(t_cylinder *cy, t_ray *r, t_hitrec *rec);
 t_bool	hit_square(t_square *sq, t_ray *r, t_hitrec *rec);
 t_bool	hit_cube(t_cube *cu, t_ray *r, t_hitrec *rec);
 t_bool	hit_pyramid(t_pyramid *py, t_ray *r, t_hitrec *rec);
+t_bool	hit_cy_circle(t_plane *pl, t_ray *r, t_hitrec *rec, double radius);
+t_bool	hit_cap_cylinder(t_cylinder *cy, t_ray *r, t_hitrec *rec);
 
 #endif

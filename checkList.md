@@ -36,9 +36,9 @@ focus on what is functional, to facilitate the control of the elements to create
 >- [ ] Normal disruption e.g. using sine which gives a wave effect.
 >- [ ] Color disruption: checkerboard.
 >- [x] Color disruption: rainbow effect using object’s normal.
->- [ ] Parallel light following a precise direction.
+>- [x] Parallel light following a precise direction.
 >- [x] Compound element: Cube (6 squares).
->- [ ] Compound element: Pyramid (4 triangles, 1 square).
+>- [x] Compound element: Pyramid (4 triangles, 1 square).
 >- [ ] Putting caps on size-limited cylinders.
 >- [ ] One other 2nd degree object: Cone, Hyperboloid, Paraboloid..
 >- [ ] One color filter: Sepia, R/G/B filters..

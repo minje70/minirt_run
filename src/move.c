@@ -18,7 +18,7 @@ t_bool	check_cy_rotate(t_objects *obj, t_hitrec *rec, t_ray *r)
 	t_cy = *(t_cylinder *)obj->data;
 	t_r = *r;
 	if (obj->rotate.x == 0 && obj->rotate.y == 0 && obj->rotate.z == 0)
-		result = hit_cylinder(&t_cy, &t_r, rec);
+		result = hit_cap_cylinder(&t_cy, &t_r, rec);
 	else
 	{
 		offset = vmult(vplus((*(t_cylinder *)obj->data).p, (*(t_cylinder *)obj->data).p2), 0.5);
@@ -26,7 +26,7 @@ t_bool	check_cy_rotate(t_objects *obj, t_hitrec *rec, t_ray *r)
 		t_cy.p2 = vminus(t_cy.p2, offset);
 		t_cy.p = vminus(t_cy.p, offset);
 		rotate_r(&t_r, obj->rotate);
-		result = hit_cylinder(&t_cy, &t_r, rec);
+		result = hit_cap_cylinder(&t_cy, &t_r, rec);
 		ray_normal_back(rec, &obj->rotate, &offset);
 	}
 	return (result);

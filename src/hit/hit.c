@@ -77,6 +77,22 @@ void set_face_normal(t_ray *r, t_hitrec *rec)
 	rec->normal = rec->front_face ? rec->normal : vmult(rec->normal, -1);
 }
 
+t_color	hit_parallel_light(t_hitrec *rec, t_objects *obj, t_vec n)
+{
+	t_color	ambient;
+	t_color diff;
+	t_light	light;
+	t_vec	light_dir;
+
+	n = vunit(n);
+	light.color = color(1, 1, 1);
+	ambient = vmult(light.color, 0.1);
+	diff = vmult(light.color, max_d(vdot(rec->normal, vunit(vmult(n, -1))), 0.0));
+	if (!shadow_parallel_color(&n, obj, rec))
+		return (vmult_(vplus(ambient, diff), rec->obj_color));
+	return (color(0, 0, 0));
+}
+
 t_color hit_light(t_hitrec *rec, t_objects *obj, t_camera *camera)
 {
 	t_color result;
@@ -90,6 +106,7 @@ t_color hit_light(t_hitrec *rec, t_objects *obj, t_camera *camera)
 	result = color(0, 0, 0);
 	rec->tmax = infinity;
 	rec->tmin = 0.001;
+	result = vplus(result, hit_parallel_light(rec, obj, vec3(-0.5, -1, 0.5)));
 	while (obj)
 	{
 		if (obj->type == LI)
@@ -98,7 +115,7 @@ t_color hit_light(t_hitrec *rec, t_objects *obj, t_camera *camera)
 			ambient = ambient_color(obj->data, 0.1);
 			diff = diff_color(obj->data, rec);
 			specular = specular_color(obj->data, rec, camera);
-			if (!shadow_color(obj->data, temp_obj, rec, camera))
+			if (!shadow_color(obj->data, temp_obj, rec))
 				result = vplus(result, vmult(vmult_(vplus(vplus(ambient, diff), specular), rec->obj_color), distance_attenuation));
 		}
 		obj = obj->next;

@@ -39,13 +39,13 @@ void	cntl_camera_translate(int keycode, t_cntl *cntl)
 
 	camera = cntl->scene->cam_onair;
 	if (keycode == KEY_W) // w
-		camera->origin = vplus(camera->origin, vmult(camera->w, 0.1));
+		camera->origin = vplus(camera->origin, vmult(camera->w, 0.2));
 	else if (keycode == KEY_S) // s
-		camera->origin = vplus(camera->origin, vmult(camera->w, -0.1));
+		camera->origin = vplus(camera->origin, vmult(camera->w, -0.2));
 	else if (keycode == KEY_A) // a
-		camera->origin = vplus(camera->origin, vcross(vmult(camera->w, -0.1), camera->vertical));
+		camera->origin = vplus(camera->origin, vcross(vmult(camera->w, -0.2), camera->vertical));
 	else if (keycode == KEY_D) // d
-		camera->origin = vplus(camera->origin, vcross(vmult(camera->w, 0.1), camera->vertical));
+		camera->origin = vplus(camera->origin, vcross(vmult(camera->w, 0.2), camera->vertical));
 }
 
 void	cntl_camera(t_cntl *cntl, int keycode)
