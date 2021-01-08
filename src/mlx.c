@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mlx.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mijeong <minje70@naver.com>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/08 01:34:38 by mijeong           #+#    #+#             */
+/*   Updated: 2021/01/08 01:35:20 by mijeong          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <mlx.h>
 #include <stdio.h>
 #include <math.h>
@@ -31,27 +43,33 @@ void	scene_init(t_cntl *cntl)
 		eerror("Error\nSceneinit Fail!!!\n");
 }
 
+void	set_cntl_win(t_cntl *cntl)
+{
+	cntl->win = mlx_new_window(cntl->mlx, cntl->scene->canv.width,
+				cntl->scene->canv.height, "mijeong's minirt!");
+	cntl->img->img = mlx_new_image(cntl->mlx, cntl->scene->canv.width,
+				cntl->scene->canv.height);
+	cntl->img->addr = mlx_get_data_addr(cntl->img->img,
+				&cntl->img->bits_per_pixel, &cntl->img->line_length,
+				&cntl->img->endian);
+	cntl->scene->img = cntl->img;
+}
+
 int		main(int ac, char **av)
 {
 	t_cntl		cntl;
 	t_std_set	s_set;
 
 	if (ac != 2 && ac != 3)
-	{
-		perror("인수 갯수틀립니다.");
-		exit(1);
-	}
+		eerror("인수 갯수틀립니다.\n");
+	cntl.mlx = mlx_init();
 	scene_init(&cntl);
 	parsing(&cntl, av[1]);
 	cntl_display_resolution(&cntl);
+	set_cntl_win(&cntl);
 	cntl.scene->cam_onair = cntl.scene->cam_list->data;
 	set_camera(cntl.scene->cam_onair);
-	cntl.mlx = mlx_init(); // mlx를 사용하기 전 초기화 해주는 함수. 최근 MLX인스턴스를 리턴함.
-	cntl.win = mlx_new_window(cntl.mlx, cntl.scene->canv.width, cntl.scene->canv.height, "mijeong's minirt!"); // MLX인스턴스, 가로길이, 세로길이, 
-	cntl.img->img = mlx_new_image(cntl.mlx, cntl.scene->canv.width, cntl.scene->canv.height); // bit를 하나하나 찍는거 보다는 이미지로 저장을 해서 한번에 찍어내는게 효율적이기 때문에 사용.
-	cntl.img->addr = mlx_get_data_addr(cntl.img->img, &cntl.img->bits_per_pixel, &cntl.img->line_length, &cntl.img->endian);
-	cntl.scene->img = cntl.img;
-	all_render(&cntl);
+	all_render(&cntl, PRERANDER);
 	if (ac == 3 && ft_strncmp("--save", av[2], 6) == 0)
 		bmp_save(&cntl);
 	mlx_put_image_to_window(cntl.mlx, cntl.win, cntl.img->img, 0, 0);

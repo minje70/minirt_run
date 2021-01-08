@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   save.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mijeong <minje70@naver.com>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/07 13:57:20 by mijeong           #+#    #+#             */
+/*   Updated: 2021/01/08 12:15:04 by mijeong          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "control.h"
 
 static t_bmph	bmp_get_header(t_scene *scene)
@@ -28,28 +40,28 @@ static t_bmph	bmp_get_header(t_scene *scene)
 	return (bmph);
 }
 
-void	bmp_save(t_cntl *cntl)
+void			bmp_save(t_cntl *cntl)
 {
 	t_bmph	bmph;
 	char	*file_name;
 	t_data	*image;
 	int		fd;
+	int		i;
 
-	printf("Type save file name (MUST end with '.bmp'\n:");
+	ft_printf("Type save file name (MUST end with '.bmp'\n:");
 	get_next_line(0, &file_name);
 	fd = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	bmph = bmp_get_header(cntl->scene);
 	write(fd, &bmph, 54);
 	image = cntl->img;
-
-	int i = 0;
+	i = 0;
 	while (i < (image->line_length / 4) * cntl->scene->canv.height)
 	{
 		if (i % (image->line_length / 4) < cntl->scene->canv.width)
 			write(fd, &image->addr[i * 4], 4);
-			++i;
+		++i;
 	}
-	printf("[%s] : file has been saved\n", file_name);
+	ft_printf("[%s] : file has been saved\n", file_name);
 	free(file_name);
 	close(fd);
 	exit(0);

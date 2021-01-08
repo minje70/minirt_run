@@ -1,13 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   util.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mijeong <minje70@naver.com>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/08 00:48:30 by mijeong           #+#    #+#             */
+/*   Updated: 2021/01/08 00:51:52 by mijeong          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "uutil.h"
 
 double	degrees_to_radians(double degrees)
 {
-	return degrees * M_PI / 180.0;
+	return (degrees * M_PI / 180.0);
 }
 
 double	max_d(double d1, double d2)
 {
 	return (d1 > d2 ? d1 : d2);
+}
+
+double	random_double(void)
+{
+	return (rand() / (RAND_MAX + 1.0));
 }
 
 t_bool	is_inside(t_triangle *tri, t_point3 p)

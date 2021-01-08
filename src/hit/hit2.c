@@ -1,120 +1,54 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   hit2.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mijeong <minje70@naver.com>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/07 19:29:44 by mijeong           #+#    #+#             */
+/*   Updated: 2021/01/07 19:30:10 by mijeong          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "hit.h"
 
-
-t_bool	hit_cy_circle(t_plane *pl, t_ray *r, t_hitrec *rec, double radius)
+void	hit_square_sub(t_square *sq, t_point3 *p)
 {
-    t_vec v;
-
-    if (hit_plane(pl, r, rec))
-	{
-		v = vminus(pl->p, rec->p);
-		if (vlength(v) <= radius)
-			return (1);
-	}
-	return (0);
-}
-
-t_bool	hit_cylinder(t_cylinder *cy, t_ray *r, t_hitrec *rec)
-{
-	// obj->rotate 가지고 회전시키기.
-	double a = vlength2(vminus(r->dir, vmult(cy->v, vdot(cy->v, r->dir))));
-	double half_b = vdot(vminus(r->dir, vmult(cy->v, vdot(cy->v, r->dir))), vminus(vminus(r->orig, cy->p), vmult(cy->v ,vdot(cy->v, vminus(r->orig, cy->p)))));
-	double c = vlength2(vminus(vminus(r->orig, cy->p), vmult(cy->v ,vdot(cy->v, vminus(r->orig, cy->p))))) - cy->r * cy->r;
-	double discriminant = half_b * half_b - a * c;
-
-	if (discriminant < 0)
-		return (0);
-	double sqrtd = sqrt(discriminant);
-	double root = (-half_b - sqrtd) / a;
-
-	if (root < rec->tmin || root > rec->tmax)
-	{
-		root = (-half_b + sqrtd) / a;
-		if (root < rec->tmin || root > rec->tmax)
-			return (0);
-		else if (vdot(cy->v, vminus(cy->p2, ray_at(*r, root))) < 0 || vdot(cy->v, vminus(cy->p, ray_at(*r, root))) > 0)
-			return (0);
-	}
-	else if (vdot(cy->v, vminus(cy->p2, ray_at(*r, root))) < 0 || vdot(cy->v, vminus(cy->p, ray_at(*r, root))) > 0)
-	{
-		root = (-half_b + sqrtd) / a;
-		if (vdot(cy->v, vminus(cy->p2, ray_at(*r, root))) < 0 || vdot(cy->v, vminus(cy->p, ray_at(*r, root))) > 0)
-			return (0);
-	}
-	rec->t = root;
-	rec->p = ray_at(*r, rec->t);
-	rec->normal = vdivide(vminus(vminus(rec->p, cy->p), vmult(cy->v, vdot(cy->v, vminus(rec->p, cy->p)))), cy->r);
-	rec->obj_color = cy->color;
-	set_face_normal(r, rec);
-	rec->p = vplus(rec->p, vmult(rec->normal, 0.001));
-	// rec->p = vplus(rec->p, rec->normal);
-	return (1);
-}
-
-t_bool	hit_cap_cylinder(t_cylinder *cy, t_ray *r, t_hitrec *rec)
-{
-	int			hit_anything;
-	t_hitrec	temp_rec;
-	t_plane		pl;
-
-	temp_rec = *rec;
-	hit_anything = 0;
-	pl.color = cy->color;
-	pl.normal = cy->v;
-	if (hit_cylinder(cy, r, &temp_rec))
-	{
-		hit_anything = 1;
-		temp_rec.tmax = temp_rec.t;
-		*rec = temp_rec;
-	}
-	pl.p = cy->p;
-	if (hit_cy_circle(&pl, r, &temp_rec, cy->r))
-	{
-		hit_anything = 1;
-		temp_rec.tmax = temp_rec.t;
-		*rec = temp_rec;
-	}
-	pl.p = cy->p2;
-	if (hit_cy_circle(&pl, r, &temp_rec, cy->r))
-	{
-		hit_anything = 1;
-		temp_rec.tmax = temp_rec.t;
-		*rec = temp_rec;
-	}
-	return (hit_anything);
+	p[0] = vmult(vunit(vcross(vec3(0, -1, 0), sq->n)), sq->len / 2);
+	p[2] = vmult(vunit(vcross(vec3(0, 1, 0), sq->n)), sq->len / 2);
+	p[2] = vplus(vplus(p[2], vmult(vunit(vcross(p[0], sq->n)), sq->len / 2)),
+			sq->p);
+	p[0] = vplus(vplus(p[0], vmult(vunit(vcross(p[0], sq->n)), sq->len / 2)),
+			sq->p);
+	p[1] = vsymmetric(p[0], sq->p);
+	p[3] = vsymmetric(p[2], sq->p);
 }
 
 t_bool	hit_square(t_square *sq, t_ray *r, t_hitrec *rec)
 {
-	t_point3	p1;
-	t_point3	p2;
-	t_point3	p3;
-	t_point3	p4;
+	t_point3	p[4];
 	t_vec		temp;
 	double		root;
 
 	root = vdot(vminus(sq->p, r->orig), sq->n);
 	if (vdot(sq->n, r->dir) == 0)
-		root = root / 0.00001;
+		root = root / 0.000001;
 	else
 		root = root / vdot(sq->n, r->dir);
 	if (root < 0 || root < rec->tmin || root > rec->tmax)
 		return (0);
-	p1 = vmult(vunit(vcross(vminus(yzero(sq->p), sq->p), sq->n)), sq->len / 2);
-	p3 = vmult(vunit(vcross(vminus(sq->p, yzero(sq->p)), sq->n)), sq->len / 2);
-	p3 = vplus(vplus(p3, vmult(vunit(vcross(p1, sq->n)), sq->len / 2)), sq->p);
-	p1 = vplus(vplus(p1, vmult(vunit(vcross(p1, sq->n)), sq->len / 2)), sq->p);
-	p2 = vsymmetric(p1, sq->p);
-	p4 = vsymmetric(p3, sq->p);
+	hit_square_sub(sq, p);
 	temp = ray_at(*r, root);
-	if (!(is_inside_(p1, p2, p3, temp) || is_inside_(p1, p2, p4, temp)))
+	if (!(is_inside_(p[0], p[1], p[2], temp) || is_inside_(p[0], p[1], p[3],
+		temp)))
 		return (0);
 	rec->t = root;
 	rec->p = temp;
 	rec->normal = sq->n;
 	rec->obj_color = sq->color;
 	set_face_normal(r, rec);
-	// rec->p = vplus(rec->p, vmult(rec->normal, 0.001));
+	rec->texture = *sq->texture;
+	get_square_uv(rec, sq, p[3]);
 	return (1);
 }
 
@@ -134,6 +68,8 @@ t_bool	hit_cube(t_cube *cu, t_ray *r, t_hitrec *rec)
 			hit_anything = 1;
 			temp_rec.tmax = temp_rec.t;
 			*rec = temp_rec;
+			rec->obj = (t_objects *)cu->sq[i];
+			rec->texture = *cu->texture;
 		}
 	}
 	return (hit_anything);
@@ -155,6 +91,7 @@ t_bool	hit_pyramid(t_pyramid *py, t_ray *r, t_hitrec *rec)
 			hit_anything = 1;
 			temp_rec.tmax = temp_rec.t;
 			*rec = temp_rec;
+			rec->texture = *py->texture;
 		}
 	}
 	if (hit_square(py->sq, r, &temp_rec))
@@ -162,6 +99,7 @@ t_bool	hit_pyramid(t_pyramid *py, t_ray *r, t_hitrec *rec)
 		hit_anything = 1;
 		temp_rec.tmax = temp_rec.t;
 		*rec = temp_rec;
+		rec->texture = *py->texture;
 	}
 	return (hit_anything);
 }

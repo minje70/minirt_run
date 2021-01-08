@@ -1,20 +1,21 @@
-#include  "control.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   control.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mijeong <minje70@naver.com>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/07 10:32:52 by mijeong           #+#    #+#             */
+/*   Updated: 2021/01/08 15:18:02 by mijeong          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void	cntl_display_resolution(t_cntl *cntl)
+#include "control.h"
+
+int		cntl_close(t_cntl *cntl)
 {
-	int	x;
-	int	y;
-
-	mlx_get_screen_size(cntl->mlx, &x, &y);
-	if (cntl->scene->canv.width > x)
-		cntl->scene->canv.width = x;
-	if (cntl->scene->canv.height > y)
-		cntl->scene->canv.height = y;
-}
-
-int         cntl_close(t_cntl *cntl)
-{
-	perror("Close mlx, BYE\n");
+	system("clear");
+	ft_printf("Close mlx, BYE\n");
 	mlx_destroy_window(cntl->mlx, cntl->win);
 	exit(0);
 }
@@ -23,46 +24,53 @@ int		cntl_mouse_click(int button, int x, int y, t_cntl *cntl)
 {
 	if (cntl->mode == 0)
 		cntl_object_select(button, x, y, cntl);
-	if (cntl->mode == 2)
+	else if (cntl->mode == 2)
 		cntl_cam_rotate(button, cntl);
 	return (0);
 }
 
-int			cntl_key_press(int keycode, t_cntl *cntl)
+int		cntl_key_press(int keycode, t_cntl *cntl)
 {
-	if (keycode == KEY_O) // o키 누르면 light on and off
+	if (keycode == KEY_O)
 		cntl_light_on_and_off(cntl);
-	else if (keycode == KEY_T)
-		cntl_rainbow_on_anc_off(cntl);
-	else if (keycode == KEY_C && cntl->mode != CAMM) // 카메라 모드로 들어감. 'c'키
+	else if (keycode == KEY_R && cntl->mode == DEFM)
+	{
+		all_render(cntl, ALLRANDER);
+		mlx_put_image_to_window(cntl->mlx, cntl->win, cntl->img->img, 0, 0);
+		ft_printf("안티 얼라이어싱 적용 완료!\n");
+	}
+	else if (keycode == KEY_C && cntl->mode != CAMM)
 		cntl_camera_on(cntl);
 	else if (keycode == KEY_ESC && cntl->mode == DEFM)
 		cntl_close(cntl);
 	else if (keycode == KEY_L && cntl->mode != LIGM)
 		cntl_light_on(cntl);
-	else if (cntl->mode == CAMM)					// 카메라 통제!!!!!!!
+	else if (keycode == KEY_T)
+		cntl_rainbow_on_anc_off(cntl);
+	else if (cntl->mode == CAMM)
 		cntl_camera(cntl, keycode);
 	else if (cntl->mode == OBJM)
 		cntl_object(keycode, cntl);
 	else if (cntl->mode == LIGM)
 		cntl_light(cntl, keycode);
 	else
-		printf("press key code:%d\n", keycode);
+		ft_printf("***press keycode:%d***\n", keycode);
 	return (1);
 }
 
-int			cntl_click_x(int focus, t_cntl *cntl)
+int		cntl_click_x(int focus, t_cntl *cntl)
 {
-	printf("Goodbye~\n");
-	// mlx_destroy_window(cntl->mlx, cntl->win);
+	system("clear");
+	ft_printf("**Click Red X Button**\n");
+	ft_printf("******Goodbye~~!******\n");
 	exit(0);
 }
 
-void		my_mlx_control(t_cntl *cntl)
+void	my_mlx_control(t_cntl *cntl)
 {
-	//요기 수정
-	mlx_hook(cntl->win, 2, (1L<<0), cntl_key_press, cntl); // 키입력 확인(안에서 분기)
-	mlx_hook(cntl->win, 17, (1L<<5), cntl_click_x, cntl); // 엑스 누르면 종료,
-	mlx_hook(cntl->win, 4, (1L<<6), cntl_mouse_click, cntl); // 오브젝트 선택
+	default_msg();
+	mlx_hook(cntl->win, 2, (1L << 0), cntl_key_press, cntl);
+	mlx_hook(cntl->win, 17, (1L << 5), cntl_click_x, cntl);
+	mlx_hook(cntl->win, 4, (1L << 6), cntl_mouse_click, cntl);
 	mlx_loop(cntl->mlx);
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   object.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mijeong <minje70@naver.com>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/07 17:06:47 by mijeong           #+#    #+#             */
+/*   Updated: 2021/01/07 17:07:16 by mijeong          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "hit.h"
 
 t_objects	*obj_last(t_objects *obj)
@@ -9,7 +21,7 @@ t_objects	*obj_last(t_objects *obj)
 	return (obj);
 }
 
-void	obj_add_back(t_objects **obj, t_objects *new_obj)
+void		obj_add_back(t_objects **obj, t_objects *new_obj)
 {
 	if (*obj == 0)
 	{
@@ -19,68 +31,22 @@ void	obj_add_back(t_objects **obj, t_objects *new_obj)
 	obj_last(*obj)->next = new_obj;
 }
 
-void object_clear(t_objects **obj)
+void		object_clear(t_objects **obj)
 {
 	t_objects	*temp;
+
 	while (*obj)
 	{
 		temp = (*obj)->next;
 		free((*obj)->data);
-		// 메모리 leak이 생길 수 있다. 주의!!
-		// del((*lst)->content);
 		free(*obj);
 		*obj = temp;
 	}
 }
 
-t_bool hit(t_ray *r, t_hitrec *rec, t_objects *object)
+t_objects	*set_object(int type, void *data)
 {
-	t_hitrec temp_rec;
-	t_bool hit_anything;
-	double closest_so_far = rec->tmax;
-
-	hit_anything = 0;
-	temp_rec = *rec;
-	while (object)
-	{
-		if (object_hit(r, &temp_rec, object))
-		{
-			hit_anything = 1;
-			temp_rec.tmax = temp_rec.t;
-			*rec = temp_rec;
-			rec->obj = object;
-		}
-		object = object->next;
-	}
-	return (hit_anything);
-}
-
-t_bool object_hit(t_ray *r, t_hitrec *rec, t_objects *object)// 실린더 돌려보자!!!!!!!!!!!!!
-{
-	t_bool		result;
-
-	if (object->type == SP)
-		result = hit_sphere(object->data, r, rec);
-	else if (object->type == PL)
-		result = check_pl_rotate(object, rec, r);
-	else if (object->type == TR)
-		result = check_tr_rotate(object, rec, r);
-	else if (object->type == CY)
-		result = check_cy_rotate(object, rec, r);
-	else if (object->type == SQ)
-		result = check_sq_rotate(object, rec, r);
-	else if (object->type == CU)
-		result = check_cu_rotate(object, rec, r);
-	else if (object->type == PY)
-		result = check_py_rotate(object, rec, r);
-	else
-		result = 0;
-	return (result);
-}
-
-t_objects *set_object(int type, void *data)
-{
-	t_objects *result;
+	t_objects	*result;
 
 	result = (t_objects *)malloc(sizeof(t_objects));
 	result->data = data;

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   util2.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mijeong <minje70@naver.com>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/08 00:51:15 by mijeong           #+#    #+#             */
+/*   Updated: 2021/01/08 00:51:18 by mijeong          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "uutil.h"
 
 t_point3	rotate_x(t_point3 point, double degree)
@@ -36,14 +48,14 @@ t_point3	rotate_z(t_point3 point, double degree)
 	return (result);
 }
 
-void	rotate_v(t_point3 *point, t_rotate rotate) // rotate에 문제가 있는듯.
+void		rotate_v(t_point3 *point, t_rotate rotate)
 {
 	*point = rotate_x(*point, rotate.x);
 	*point = rotate_y(*point, rotate.y);
 	*point = rotate_z(*point, rotate.z);
 }
 
-void	rotate_iv(t_point3 *point, t_rotate rotate)
+void		rotate_iv(t_point3 *point, t_rotate rotate)
 {
 	*point = rotate_z(*point, rotate.z);
 	*point = rotate_y(*point, rotate.y);
